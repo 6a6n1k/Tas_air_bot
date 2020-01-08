@@ -45,7 +45,7 @@ def fr_parse(base_url, headers):
                 ft3[i] = ft2[i + b] + ' => ' + ft2[i + a]
             urlg = reis2
             for i in range(len(reis2)):
-                urlg[i]=(str(i+1))+') '+url+reis2[i]+'  '+bort2[i]+'  '+ft3[i]
+                urlg[i]=(str(i+1))+') '+ '[LIVE на FR24]'+'('+url+reis2[i]+')' + '  '+'✈ '+bort2[i]+'  '+ft3[i]
             str1 = '\n'.join(urlg)
         else:
             str1=('Что то пошло не так попробуйте позже')
@@ -57,7 +57,7 @@ def fr_parse(base_url, headers):
 def get_text_messages(message):
     if message.text == "/tas":
         urlg = fr_parse(base_url, headers)
-        bot.send_message(message.from_user.id, urlg)
+        bot.send_message(message.from_user.id, urlg,disable_web_page_preview = True, parse_mode='markdown' )
     elif message.text == "/help":
         bot.send_message(message.from_user.id, "Напиши /tas")
     else:
