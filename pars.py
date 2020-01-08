@@ -30,9 +30,9 @@ def fr_parse(base_url, headers):
         bort2=bort1.split(',')
 
         #from-to
-        ft=re.findall(r'"isValidAirportCode":true,"altIdent":"\w+',soup)
+        ft=re.findall(r'"friendlyName":"\w+',soup)
         ftstr1=','.join(ft)
-        ft1=re.sub(r'"isValidAirportCode":true,"altIdent":"',"",ftstr1)
+        ft1=re.sub(r'"friendlyName":"',"",ftstr1)
         ft2=ft1.split(',')
         ft3=(bort2)[0:len(bort2)]
 
@@ -42,10 +42,14 @@ def fr_parse(base_url, headers):
             for i in range(int((len(ft2)) / 2)):
                 a = i
                 b = i + 1
-                ft3[i] = ft2[i + b] + ' => ' + ft2[i + a]
+                if ((ft2[i+a])=='Ташкент'):
+                    ft3[i] = ft2[i + b] + ' 🛬 ' + ft2[i + a]
+                else:
+                    ft3[i] = ft2[i + b] + ' 🛫 ' + ft2[i + a]
+
             urlg = reis2
             for i in range(len(reis2)):
-                urlg[i]=(str(i+1))+') '+ '[LIVE на FR24]'+'('+url+reis2[i]+')' + '  '+'✈ '+bort2[i]+'  '+ft3[i]
+                urlg[i]=(str(i+1))+') '+ '['+reis2[i]+ ' на FR24]'+'('+url+reis2[i]+')' + '   '+'✈ '+bort2[i]+'\n'+ft3[i]
             str1 = '\n'.join(urlg)
         else:
             str1=('Что то пошло не так попробуйте позже')
