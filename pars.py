@@ -35,29 +35,32 @@ def fr_parse(base_url, headers):
         ft1=re.sub(r'"isValidAirportCode":true,"altIdent":"',"",ftstr1)
         ft2=ft1.split(',')
         ft3=(bort2)[0:len(bort2)]
-        for i in range(int((len(ft2))/2)):
-            a=i
-            b=i+1
-            ft3[i]=ft2[i+b]+' => '+ft2[i+a]
 
-        urlg=reis2
-        for i in range(len(reis2)):
-            urlg[i]=(str(i+1))+') '+url+reis2[i]+'  '+bort2[i]+'  '+ft3[i]
-        return(urlg)
-#
 
-    else:
-        print('Error')
+
+        if ((len(bort2))==(len(reis2))):
+            for i in range(int((len(ft2)) / 2)):
+                a = i
+                b = i + 1
+                ft3[i] = ft2[i + b] + ' => ' + ft2[i + a]
+            urlg = reis2
+            for i in range(len(reis2)):
+                urlg[i]=(str(i+1))+') '+url+reis2[i]+'  '+bort2[i]+'  '+ft3[i]
+            str1 = '\n'.join(urlg)
+        else:
+            str1=('Что то пошло не так попробуйте позже')
+    return (str1)
+
+
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    if message.text == "Tas":
+    if message.text == "/tas":
         urlg = fr_parse(base_url, headers)
-        str = '\n'.join(urlg)
-        bot.send_message(message.from_user.id, str)
+        bot.send_message(message.from_user.id, urlg)
     elif message.text == "/help":
-        bot.send_message(message.from_user.id, "Напиши Tas")
+        bot.send_message(message.from_user.id, "Напиши /tas")
     else:
-        bot.send_message(message.from_user.id, "Что бы увидеть выполняемые рейсы в/из Ташкента отправь Tas")
+        bot.send_message(message.from_user.id, "Что бы увидеть активные рейсы в/из Ташкента отправь /tas")
 
 bot.polling(none_stop=True, interval=0)
