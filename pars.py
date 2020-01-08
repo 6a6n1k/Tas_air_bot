@@ -51,7 +51,7 @@ def fr_parse(base_url, headers,):
 
             i=i+1
     for j in range(len(botsend)):
-        botsend[j]='*'+(str(j + 1)) + ')* ' + '[' + reis1[j] + ' на FR24]' + '('+url+reis1[j]+')' + '   ✈ ' + bort1[j] + '\n' + '*' +from1[j] + '➡' + to1[j] + '*' + '\n' + '🕙(Таш)' + lg1[j]
+        botsend[j]='*'+(str(j + 1)) + ')* ' + '[' + reis1[j] + ' на FR24]' + '('+url+reis1[j]+')' + '   ✈ ' + bort1[j] + '\n' + '*' +from1[j] + '➡' + to1[j] + '*' + '\n' + '🕙(Таш)' + lg1[j] + '\n'
     str1 = '\n'.join(botsend)
     return (str1)
 
