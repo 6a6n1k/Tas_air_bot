@@ -1,9 +1,10 @@
 import requests
 from bs4 import BeautifulSoup as bs
-import re
-import telebot;
+import telebot
+import json
+import datetime
 
-bot = telebot.TeleBot('937403692:AAGeiMrpb5N-zgN1rLCUHlGLV93aR4kUyhA');
+bot = telebot.TeleBot('937403692:AAGeiMrpb5N-zgN1rLCUHlGLV93aR4kUyhA')
 
 url=('https://www.flightradar24.com/')
 headers = {'accept': '*/*',
@@ -12,50 +13,47 @@ base_url = 'https://ru.flightaware.com/ajax/trackpoll.rvt?token=88dd7c1a0d41355d
 
 
 
-def fr_parse(base_url, headers):
+def fr_parse(base_url, headers,):
     session = requests.Session()
     request = session.get(base_url, headers=headers)
     if request.status_code == 200:
         soup = bs(request.content, 'html.parser').text
-        #reis
-        reis=re.findall(r'"displayIdent":"\w+',soup)
-        reisstr1=','.join(reis)
-        reis1=re.sub(r'"displayIdent":"',"",reisstr1)
-        reis2=reis1.split(',')
+        data = json.loads(soup)
+        flights = data.get('flights', '')
+        i=0
+        from1 = [0] * len(flights)
+        to1 = [0] * len(flights)
+        bort1 = [0]* len(flights)
+        reis1 = [0]* len(flights)
+        lg1 = [0]* len(flights)
+        botsend = [0]* len(flights)
 
-        #bort
-        bort=re.findall(r'"gate":null,"terminal":null,"delays":null},"type":"\w+',soup)
-        bortstr1=','.join(bort)
-        bort1=re.sub(r'"gate":null,"terminal":null,"delays":null},"type":"',"",bortstr1)
-        bort2=bort1.split(',')
+        for _, item,  in flights.items():
+            #to
+            destination = item.get('destination', '-')
+            to2 = destination.get('friendlyName', '-')
+            to1[i]=to2
+            #from
+            origin=item.get('origin','-')
+            from2=origin.get('friendlyName', '-')
+            from1[i]=from2
+            #bort
+            type=item.get('type','-')
+            bort1[i]=type
+            #reis
+            ident=item.get('ident','-')
+            reis1[i]=ident
+            #landing
+            landingtimes=item.get('landingTimes','-')
+            lg3=landingtimes.get('estimated','-')
+            lg2 = datetime.datetime.fromtimestamp(lg3)
+            lg1[i]=str(lg2)
 
-        #from-to
-        ft=re.findall(r'"friendlyName":"\w+',soup)
-        ftstr1=','.join(ft)
-        ft1=re.sub(r'"friendlyName":"',"",ftstr1)
-        ft2=ft1.split(',')
-        ft3=(bort2)[0:len(bort2)]
-
-
-
-        if ((len(bort2))==(len(reis2))):
-            for i in range(int((len(ft2)) / 2)):
-                a = i
-                b = i + 1
-                if ((ft2[i+a])=='Ташкент'):
-                    ft3[i] = ft2[i + b] + ' 🛬 ' + ft2[i + a]
-                else:
-                    ft3[i] = ft2[i + b] + ' 🛫 ' + ft2[i + a]
-
-            urlg = reis2
-            for i in range(len(reis2)):
-                urlg[i]=(str(i+1))+') '+ '['+reis2[i]+ ' на FR24]'+'('+url+reis2[i]+')' + '   '+'✈ '+bort2[i]+'\n'+ft3[i]
-            str1 = '\n'.join(urlg)
-        else:
-            str1=('Что то пошло не так попробуйте позже')
+            i=i+1
+    for j in range(len(botsend)):
+        botsend[j]='*'+(str(j + 1)) + ')* ' + '[' + reis1[j] + ' на FR24]' + '('+url+reis1[j]+')' + '   ✈ ' + bort1[j] + '\n' + '*' +from1[j] + '➡' + to1[j] + '*' + '\n' + '🕙(Таш)' + lg1[j]
+    str1 = '\n'.join(botsend)
     return (str1)
-
-
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
